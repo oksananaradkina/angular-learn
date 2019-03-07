@@ -1,3 +1,15 @@
+image: "workspace/angular-learn"
+# Command to start on workspace startup (optional)
+tasks:
+  - command: "npm run start"
+# Ports to expose on workspace startup (optional)
+ports:
+  - port: 4200
+
+
+
+
+
 # AngularLearn
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.4.
