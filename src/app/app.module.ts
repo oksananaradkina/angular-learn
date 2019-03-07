@@ -6,12 +6,7 @@ import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 
 import { MenubarModule } from 'primeng/menubar';
-import { RouterModule, Routes } from '@angular/router';
-import { TickTackToeModule, TickTackToeComponent } from './pages/tick-tack-toe/tick-tack-toe.component';
-
-const appRoutes: Routes = [
-  { path: 'tick-tack-toe', component: TickTackToeComponent }
-]
+import { TickTackToeModule } from './pages/tick-tack-toe/tick-tack-toe.component';
 
 
 @NgModule({
@@ -21,9 +16,6 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     AppRoutingModule,
-    RouterModule.forRoot(
-      appRoutes,
-    ),
     FormsModule,
     MenubarModule,
     TickTackToeModule
