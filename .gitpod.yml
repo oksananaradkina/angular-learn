@@ -1,4 +1,7 @@
+image: "workspace/angular-learn"
 ports:
 - port: 4200
+  onOpen: open-browser
 tasks:
+- command: npm i
 - command: npm run start
