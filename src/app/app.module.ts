@@ -10,25 +10,26 @@ import { RouterModule, Routes } from '@angular/router';
 import { TickTackToeModule, TickTackToeComponent } from './pages/tick-tack-toe/tick-tack-toe.component';
 
 const appRoutes: Routes = [
-    { path: 'tick-tack-toe', component: TickTackToeComponent }
+  { path: 'tick-tack-toe', component: TickTackToeComponent }
 ]
 
 
 @NgModule({
-    declarations: [
-        AppComponent
-    ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        RouterModule.forRoot(
-            appRoutes,
-        ),
-        FormsModule,
-        MenubarModule,
-        TickTackToeModule
-    ],
-    providers: [],
-    bootstrap: [AppComponent]
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    RouterModule.forRoot(
+      appRoutes,
+    ),
+    FormsModule,
+    MenubarModule,
+    TickTackToeModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+
 })
 export class AppModule { }

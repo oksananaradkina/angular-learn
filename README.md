@@ -1,3 +1,13 @@
+1. Перед началом работы запустить в консоли команду:
+**npm i**
+
+2. После установки проекта запустить команду:
+**npm run start**
+
+
+
+
+
 # AngularLearn
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.4.
