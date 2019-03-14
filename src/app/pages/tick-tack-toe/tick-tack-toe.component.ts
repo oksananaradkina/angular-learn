@@ -1,6 +1,10 @@
 import { NgModule, Component, OnInit } from '@angular/core';
-import { IPlay, ICell, Cell } from './cell';
+
 import { CommonModule } from '@angular/common';
+import { IStrategy } from './strategies/type';
+import { Strategy_1 } from './strategies/strategy-1';
+import { IPlayer, IPlayText, PlayStatus, IPlay, ICell, TStepChar } from './types';
+import { Cell } from './cell';
 
 /**
 1.
@@ -8,44 +12,6 @@ import { CommonModule } from '@angular/common';
 
  */
 
-interface IPlayText {
-  play: boolean;
-  buttonEnabled: boolean;
-  message: string;
-}
-
-interface IPlayStatus {
-  WAIT: IPlayText,
-  PLAY: IPlayText,
-  STOP: IPlayText,
-}
-
-const PlayStatus: IPlayStatus = {
-  WAIT: {
-    buttonEnabled: true,
-    play: false,
-    message: 'Начать игру'
-  },
-  PLAY: {
-    buttonEnabled: false,
-    play: true,
-    message: 'Игра начата'
-  },
-  STOP: {
-    buttonEnabled: true,
-    play: false,
-    message: 'Игра закончена'
-  },
-}
-
-
-export interface IPlayer {
-  name: string,
-  win: number,
-  loss: number,
-  steps: Set<ICell>,
-  char: 'x' | 'o'
-}
 
 
 @Component({
@@ -66,7 +32,7 @@ export interface IPlayer {
 <table>
   <tr *ngFor="let row of cells">
     <td *ngFor="let cell of row"  [ngClass]="cell.styleClass" (click)="doStep(cell)">
-      {{cell.step}}
+      {{cell.char}}
     </td>
   </tr>
 </table>
@@ -75,8 +41,10 @@ export interface IPlayer {
 })
 export class TickTackToeComponent implements OnInit, IPlay {
 
-  playerComp = 0;
-  playerUser = 1;
+  strategy: IStrategy;
+
+  playerComp: IPlayer;
+  playerUser: IPlayer;
 
   players: IPlayer[] = [];
 
@@ -92,20 +60,21 @@ export class TickTackToeComponent implements OnInit, IPlay {
   onStartPlay(event: any) {
     this.playStatus = PlayStatus.PLAY;
     this.createCells();
-    this.createVariants();
+    this.variants = this.getVariants();
   }
 
   ngOnInit() {
-
-    this.createCells();
-    this.createVariants();
-
     this.playStatus = PlayStatus.WAIT;
+    this.createCells();
+    this.variants = this.getVariants();
+
 
     this.initPlayers();
+
+    this.strategy = new Strategy_1(this.cells, this.playerComp.steps, this.variants);
   }
 
-  createPlayer(name: string, char: 'x' | 'o'): IPlayer {
+  createPlayer(name: string, char: TStepChar): IPlayer {
     return {
       name,
       char,
@@ -116,82 +85,82 @@ export class TickTackToeComponent implements OnInit, IPlay {
   }
 
   initPlayers() {
-    this.players.push(this.createPlayer('Компьютер', 'o'));
-    this.players.push(this.createPlayer('Пользователь', 'x'));
+
+    this.playerComp = this.createPlayer('Компьютер', 'o');
+    this.playerUser = this.createPlayer('Пользователь', 'x');
+    this.players.push(this.playerComp);
+    this.players.push(this.playerUser);
+  }
+
+  /**
+   */
+  isStepAllowed(cell: ICell): boolean {
+
+    return this.playStatus.play && Boolean(cell.char) === false;
+  }
+
+  userStep(cell: ICell) {
+    cell.char = this.playerUser.char;
+    this.playerUser.steps.add(cell);
   }
 
   doStep(cell: ICell) {
 
-    if (this.playStatus.play === false) {
+    if (this.isStepAllowed(cell) === false) {
       return;
     }
 
-    if (cell.step) {
-      return;
-    }
+    this.userStep(cell);
 
 
-    cell.doStep('x');
-    if (this.isNotComplete()) {
-      this.computerStep();
-    }
+    if (this.isComplete()) {
 
-    if (this.isNotComplete() === false) {
       this.playStatus = PlayStatus.STOP;
+      return
+    }
 
+    this.computerStep();
+
+    if (this.isComplete()) {
+
+      this.playStatus = PlayStatus.STOP;
+      return;
     }
   }
   computerStep() {
-    const emptyCells = this.getEmptyCells();
-    const maxIndex = emptyCells.length - 1;
-    const randomIndex = Math.round(Math.random() * maxIndex);
-    const randomCell = emptyCells[randomIndex];
 
-    randomCell.step = 'o';
+    const cellStep: ICell = this.strategy.getStep(this.variants, this.playerComp.steps);
+
+    if (cellStep) {
+      cellStep.char = this.playerComp.char;
+      this.playerComp.steps.add(cellStep);
+    }
   }
 
-  getEmptyCells() {
-    const emptyCells: ICell[] = [];
-    this.cells.forEach((row: ICell[]) => {
-      row.forEach((cell: ICell) => {
-        if (!cell.step) {
-          emptyCells.push(cell);
-        }
-      })
-    })
-
-    return emptyCells;
-  }
-
-
-
-  isNotComplete() {
+  isComplete() {
     const userComplete = this.isTheEnd('x');
     if (userComplete) {
       const completeCells = this.variants[userComplete];
       completeCells.forEach((cell: ICell) => cell.styleClass += ' complete-user');
-      return false;
+      return true;
     }
     const compComplete = this.isTheEnd('o');
     if (compComplete) {
       const completeCells = this.variants[compComplete];
       completeCells.forEach((cell: ICell) => cell.styleClass += ' complete-comp');
-      return false;
+      return true;
     }
-
-
-
-    return true;
+    return false;
   }
 
 
 
-  isTheEnd(step: string) {
+  isTheEnd(char: TStepChar) {
 
     let completeIndex: number;
 
     this.variants.every((cells: ICell[], index: number) => {
-      const complete = cells.filter((cell: ICell) => cell.step === step);
+      const complete = cells.filter((cell: ICell) => cell.char === char);
 
       if (complete.length === 3) {
         completeIndex = index;
@@ -203,6 +172,40 @@ export class TickTackToeComponent implements OnInit, IPlay {
     return completeIndex;
   }
 
+
+
+  createCells() {
+    for (let row = 0; row < 3; row++) {
+      const cells: ICell[] = []
+      for (let col = 0; col < 3; col++) {
+        cells[col] = new Cell(row, col)
+      }
+      this.cells[row] = cells;
+    }
+  }
+  getVariants() {
+
+    const variants: ICell[][] = [];
+
+    [0, 1, 2].forEach((row: number) => {
+      const rowCells = this.getRow(row);
+      variants.push(rowCells)
+    });
+
+
+    [0, 1, 2].forEach((col: number) => {
+      const colCells = this.getCol(col);
+      variants.push(colCells)
+    });
+
+    [0, 1].forEach((diag: number) => {
+
+      const diagCells = this.getDiag(diag);
+      variants.push(diagCells)
+    })
+
+    return variants;
+  }
 
   getRow(row: number) {
     return this.cells[row];
@@ -244,36 +247,6 @@ export class TickTackToeComponent implements OnInit, IPlay {
     return diagCells;
   }
 
-
-
-  createVariants() {
-    [0, 1, 2].forEach((row: number) => {
-      const rowCells = this.getRow(row);
-      this.variants.push(rowCells)
-    });
-
-
-    [0, 1, 2].forEach((col: number) => {
-      const colCells = this.getCol(col);
-      this.variants.push(colCells)
-    });
-
-    [0, 1].forEach((diag: number) => {
-
-      const diagCells = this.getDiag(diag);
-      this.variants.push(diagCells)
-    })
-  }
-
-  createCells() {
-    for (let row = 0; row < 3; row++) {
-      const cells: ICell[] = []
-      for (let col = 0; col < 3; col++) {
-        cells[col] = new Cell(row, col)
-      }
-      this.cells[row] = cells;
-    }
-  }
 
 }
 

@@ -1,21 +1,9 @@
-export interface ICell {
-  row: number;
-  col: number;
-  step: string;
-  styleClass: string;
-  doStep(step: string);
-}
-
-
-
-export interface IPlay {
-  cells: ICell[][];
-}
+import { ICell, TStepChar } from './types';
 
 export class Cell implements ICell {
   col: number;
   row: number;
-  step: string;
+  char: TStepChar;
   styleClass: string = "cell";
 
   constructor(row: number, col: number) {
@@ -24,8 +12,8 @@ export class Cell implements ICell {
   }
 
 
-  doStep(step: string) {
-    this.step = step;
+  doStep(step: TStepChar) {
+    this.char = step;
   }
 }
 
