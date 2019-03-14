@@ -17,26 +17,36 @@ import { Cell } from './cell';
 @Component({
   selector: 'tick-tack-toe',
   template: `
+<h1> Крестики-нолики</h1>
+<h2 class="play-status">{{playStatus.message}}</h2>
+<div class="game-area">
+	<div class="game-field">
+		<table>
+			<tr *ngFor="let row of cells">
+				<td *ngFor="let cell of row" [ngClass]="cell.styleClass" (click)="doStep(cell)">
+					{{cell.char}}
+				</td>
+			</tr>
+		</table>
 
-  <h2>Игроки</h2>
-  <div class="players">
-    <div *ngFor="let player of players"  class="player">
-      <div><span class="player-property" >Имя: </span>{{player.name}}</div>
-      <div><span class="player-property" >Ход: </span>{{player.char}}</div>
-      <div><span class="player-property" >Выигрыши: </span>{{player.win}}</div>
-      <div><span class="player-property" >Проигрыши: </span>{{player.loss}}</div>
-      <div><span class="player-property" >Ходы: </span>{{player.steps.size}}</div>
+	</div>
+
+	<div class="info-field">
+  		<h4>Игроки</h4>
+		<div class="players">
+
+			<div *ngFor="let player of players" class="player">
+				<div><span class="player-property" >Имя: </span>{{player.name}}</div>
+        <div><span class="player-property" >Ход: </span>{{player.char}}</div>
+        <div><span class="player-property" >Выигрыши: </span>{{player.win}}</div>
+        <div><span class="player-property" >Проигрыши: </span>{{player.loss}}</div>
+        <div><span class="player-property" >Ходы: </span>{{player.steps.size}}</div>
+      </div>
     </div>
   </div>
-  <h2 class="play-status">{{playStatus.message}}</h2>
-<table>
-  <tr *ngFor="let row of cells">
-    <td *ngFor="let cell of row"  [ngClass]="cell.styleClass" (click)="doStep(cell)">
-      {{cell.char}}
-    </td>
-  </tr>
-</table>
+</div>
 <button [disabled]="!playStatus.buttonEnabled" (click)="onStartPlay($event)">Играть</button>
+
   `
 })
 export class TickTackToeComponent implements OnInit, IPlay {

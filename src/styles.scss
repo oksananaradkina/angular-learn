@@ -5,7 +5,19 @@ $color-gray-dark:#777;
 $padding: 1em;
 $border:  1px solid $color-gray;
 
+.game-area{
+  display:flex;
 
+  .game-field{
+    flex:1;
+  }
+  .info-field{
+    h4{
+      margin:0 0 .5em .5em
+    }
+    flex:3;
+  }
+}
 .cell{
   width: 64px;
   height: 64px;
@@ -13,11 +25,12 @@ $border:  1px solid $color-gray;
   font-size: 3em;
   font-weight: bold;
   text-align: center;
+
+  &:hover{
+    border: $border;
+  }
 }
 
-.cell:hover{
-  border: $border;
-}
 
 .complete-user{
   background-color: #0f0;
