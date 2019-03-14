@@ -2,10 +2,67 @@ import { NgModule, Component, OnInit } from '@angular/core';
 import { IPlay, ICell, Cell } from './cell';
 import { CommonModule } from '@angular/common';
 
+/**
+1.
+
+
+ */
+
+interface IPlayText {
+  play: boolean;
+  buttonEnabled: boolean;
+  message: string;
+}
+
+interface IPlayStatus {
+  WAIT: IPlayText,
+  PLAY: IPlayText,
+  STOP: IPlayText,
+}
+
+const PlayStatus: IPlayStatus = {
+  WAIT: {
+    buttonEnabled: true,
+    play: false,
+    message: 'Начать игру'
+  },
+  PLAY: {
+    buttonEnabled: false,
+    play: true,
+    message: 'Игра начата'
+  },
+  STOP: {
+    buttonEnabled: true,
+    play: false,
+    message: 'Игра закончена'
+  },
+}
+
+
+export interface IPlayer {
+  name: string,
+  win: number,
+  loss: number,
+  steps: Set<ICell>,
+  char: 'x' | 'o'
+}
+
 
 @Component({
   selector: 'tick-tack-toe',
   template: `
+
+  <h2>Игроки</h2>
+  <div class="players">
+    <div *ngFor="let player of players"  class="player">
+      <div><span class="player-property" >Имя: </span>{{player.name}}</div>
+      <div><span class="player-property" >Ход: </span>{{player.char}}</div>
+      <div><span class="player-property" >Выигрыши: </span>{{player.win}}</div>
+      <div><span class="player-property" >Проигрыши: </span>{{player.loss}}</div>
+      <div><span class="player-property" >Ходы: </span>{{player.steps.size}}</div>
+    </div>
+  </div>
+  <h2 class="play-status">{{playStatus.message}}</h2>
 <table>
   <tr *ngFor="let row of cells">
     <td *ngFor="let cell of row"  [ngClass]="cell.styleClass" (click)="doStep(cell)">
@@ -13,20 +70,77 @@ import { CommonModule } from '@angular/common';
     </td>
   </tr>
 </table>
+<button [disabled]="!playStatus.buttonEnabled" (click)="onStartPlay($event)">Играть</button>
   `
 })
 export class TickTackToeComponent implements OnInit, IPlay {
+
+  playerComp = 0;
+  playerUser = 1;
+
+  players: IPlayer[] = [];
 
   cells: ICell[][] = []
 
   variants: ICell[][] = []
 
-  ngOnInit() {
 
+
+  playStatus: IPlayText;
+
+
+  onStartPlay(event: any) {
+    this.playStatus = PlayStatus.PLAY;
     this.createCells();
     this.createVariants();
   }
 
+  ngOnInit() {
+
+    this.createCells();
+    this.createVariants();
+
+    this.playStatus = PlayStatus.WAIT;
+
+    this.initPlayers();
+  }
+
+  createPlayer(name: string, char: 'x' | 'o'): IPlayer {
+    return {
+      name,
+      char,
+      win: 0,
+      loss: 0,
+      steps: new Set()
+    }
+  }
+
+  initPlayers() {
+    this.players.push(this.createPlayer('Компьютер', 'o'));
+    this.players.push(this.createPlayer('Пользователь', 'x'));
+  }
+
+  doStep(cell: ICell) {
+
+    if (this.playStatus.play === false) {
+      return;
+    }
+
+    if (cell.step) {
+      return;
+    }
+
+
+    cell.doStep('x');
+    if (this.isNotComplete()) {
+      this.computerStep();
+    }
+
+    if (this.isNotComplete() === false) {
+      this.playStatus = PlayStatus.STOP;
+
+    }
+  }
   computerStep() {
     const emptyCells = this.getEmptyCells();
     const maxIndex = emptyCells.length - 1;
@@ -50,16 +164,6 @@ export class TickTackToeComponent implements OnInit, IPlay {
   }
 
 
-  doStep(cell: ICell) {
-    cell.doStep('x');
-    if (this.isNotComplete()) {
-      this.computerStep();
-    }
-
-    if (this.isNotComplete()) {
-
-    }
-  }
 
   isNotComplete() {
     const userComplete = this.isTheEnd('x');

@@ -1,15 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+$color-gray:#aaa;
+$color-gray-dark:#777;
+
+$padding: 1em;
+$border:  1px solid $color-gray;
+
+
 .cell{
   width: 64px;
   height: 64px;
-  border: 1px solid #aaa;
+  border:$border;
   font-size: 3em;
   font-weight: bold;
   text-align: center;
 }
 
 .cell:hover{
-  border: 1px solid #777;
+  border: $border;
 }
 
 .complete-user{
@@ -17,4 +24,23 @@
 }
 .complete-comp{
   background-color: #ff0;
+}
+.play-status{
+  display:block-inline;
+  color: #f62;
+  border: $border;
+  padding: $padding;
+}
+
+.players {
+  display: flex;
+  border: $border;
+  padding: $padding;
+
+  .player{
+    padding: $padding;
+    .player-property{
+      font-weight: bold;
+    }
+  }
 }
