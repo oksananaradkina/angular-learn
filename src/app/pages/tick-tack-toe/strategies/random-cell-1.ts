@@ -1,14 +1,18 @@
 import { IStrategy } from "./type";
-import { ICell } from '../types';
+import { ICell, IPlayer } from '../types';
 import { Strategy } from './strategy';
 
 
-export class Strategy_1 extends Strategy implements IStrategy {
+export class StrategyRandomCell extends Strategy implements IStrategy {
 
-  constructor(protected cells: ICell[][],
-    protected steps: Set<ICell>,
-    protected variants: ICell[][]) {
-    super(cells, steps, variants)
+  weight = 0;
+
+  constructor(
+    protected cells: ICell[][],
+    protected variants: ICell[][],
+    protected playerComp: IPlayer,
+    protected playerUser: IPlayer) {
+    super(cells, variants, playerComp, playerUser)
   }
 
   getStep() {

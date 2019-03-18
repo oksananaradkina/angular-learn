@@ -7,6 +7,7 @@ export interface ICell {
   char: TStepChar;
   styleClass: string;
   doStep(step: string);
+  removeClass(klass: string) ;
 }
 
 

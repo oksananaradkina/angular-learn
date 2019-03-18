@@ -2,9 +2,12 @@ import { NgModule, Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { IStrategy } from './strategies/type';
-import { Strategy_1 } from './strategies/strategy-1';
+import { StrategyRandomCell } from './strategies/random-cell-1';
 import { IPlayer, IPlayText, PlayStatus, IPlay, ICell, TStepChar } from './types';
 import { Cell } from './cell';
+import { PlayersInfoModule } from './players-info.ts/palyers-info.component';
+import { StrategyTwoUserCells } from './strategies/two-user-cell';
+import { StrategyTwoCompCells } from './strategies/two-comp-cell';
 
 /**
 1.
@@ -32,17 +35,7 @@ import { Cell } from './cell';
 	</div>
 
 	<div class="info-field">
-  		<h4>Игроки</h4>
-		<div class="players">
-
-			<div *ngFor="let player of players" class="player">
-				<div><span class="player-property" >Имя: </span>{{player.name}}</div>
-        <div><span class="player-property" >Ход: </span>{{player.char}}</div>
-        <div><span class="player-property" >Выигрыши: </span>{{player.win}}</div>
-        <div><span class="player-property" >Проигрыши: </span>{{player.loss}}</div>
-        <div><span class="player-property" >Ходы: </span>{{player.steps.size}}</div>
-      </div>
-    </div>
+ <players-info [players]="players" ></players-info>
   </div>
 </div>
 <button [disabled]="!playStatus.buttonEnabled" (click)="onStartPlay($event)">Играть</button>
@@ -51,7 +44,7 @@ import { Cell } from './cell';
 })
 export class TickTackToeComponent implements OnInit, IPlay {
 
-  strategy: IStrategy;
+  strategies: IStrategy[] = [];
 
   playerComp: IPlayer;
   playerUser: IPlayer;
@@ -69,8 +62,7 @@ export class TickTackToeComponent implements OnInit, IPlay {
 
   onStartPlay(event: any) {
     this.playStatus = PlayStatus.PLAY;
-    this.createCells();
-    this.variants = this.getVariants();
+    this.clearCells();
   }
 
   ngOnInit() {
@@ -81,7 +73,10 @@ export class TickTackToeComponent implements OnInit, IPlay {
 
     this.initPlayers();
 
-    this.strategy = new Strategy_1(this.cells, this.playerComp.steps, this.variants);
+    this.strategies.push(new StrategyRandomCell(this.cells, this.variants, this.playerComp, this.playerUser));
+    this.strategies.push(new StrategyTwoUserCells(this.cells, this.variants, this.playerComp, this.playerUser));
+    this.strategies.push(new StrategyTwoCompCells(this.cells, this.variants, this.playerComp, this.playerUser));
+    //StrategyTwoCompCells
   }
 
   createPlayer(name: string, char: TStepChar): IPlayer {
@@ -126,7 +121,7 @@ export class TickTackToeComponent implements OnInit, IPlay {
     if (this.isComplete()) {
 
       this.playStatus = PlayStatus.STOP;
-      return
+      return;
     }
 
     this.computerStep();
@@ -139,25 +134,44 @@ export class TickTackToeComponent implements OnInit, IPlay {
   }
   computerStep() {
 
-    const cellStep: ICell = this.strategy.getStep(this.variants, this.playerComp.steps);
+    const cells: ICell[] = [];
 
-    if (cellStep) {
+    this.strategies
+      .sort((strategy1: IStrategy, strategy2: IStrategy) => {
+        return strategy2.weight - strategy1.weight;
+      })
+      .map((strategy: IStrategy) => strategy.getStep())
+      // .filter((steps: ICell[]) => {
+      //   return steps.length > 0;
+      // })
+      .forEach((step: ICell) => cells.push(step))
+
+
+
+    if (cells.length > 0) {
+      const cellStep = cells[0];
       cellStep.char = this.playerComp.char;
       this.playerComp.steps.add(cellStep);
     }
+  }
+  getRandomCell(cells: ICell[]) {
+
+    const maxIndex = cells.length - 1;
+    const randomIndex = Math.round(Math.random() * maxIndex);
+    return cells[randomIndex];
   }
 
   isComplete() {
     const userComplete = this.isTheEnd('x');
     if (userComplete) {
       const completeCells = this.variants[userComplete];
-      completeCells.forEach((cell: ICell) => cell.styleClass += ' complete-user');
+      completeCells.forEach((cell: ICell) => cell.styleClass = 'complete-user');
       return true;
     }
     const compComplete = this.isTheEnd('o');
     if (compComplete) {
       const completeCells = this.variants[compComplete];
-      completeCells.forEach((cell: ICell) => cell.styleClass += ' complete-comp');
+      completeCells.forEach((cell: ICell) => cell.styleClass = 'complete-comp');
       return true;
     }
     return false;
@@ -182,7 +196,16 @@ export class TickTackToeComponent implements OnInit, IPlay {
     return completeIndex;
   }
 
+  clearCells() {
+    this.cells.forEach((cells: ICell[]) => {
+      cells.forEach((cell: ICell) => {
 
+        cell.char = null
+        cell.removeClass('complete-comp');
+        cell.removeClass('complete-user');
+      })
+    })
+  }
 
   createCells() {
     for (let row = 0; row < 3; row++) {
@@ -266,7 +289,8 @@ export class TickTackToeComponent implements OnInit, IPlay {
     TickTackToeComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    PlayersInfoModule
   ],
   providers: [],
 
