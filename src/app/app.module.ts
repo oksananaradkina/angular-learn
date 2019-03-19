@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 
 import { MenubarModule } from 'primeng/menubar';
 import { TickTackToeModule } from './pages/tick-tack-toe/tick-tack-toe.component';
+import { BanditModule } from './pages/bandit/bandit.component';
+import { ExamplesModule } from './pages/examples/examples.component';
 
 
 @NgModule({
@@ -18,7 +20,9 @@ import { TickTackToeModule } from './pages/tick-tack-toe/tick-tack-toe.component
     AppRoutingModule,
     FormsModule,
     MenubarModule,
-    TickTackToeModule
+    TickTackToeModule,
+    BanditModule,
+    ExamplesModule
   ],
   providers: [],
   bootstrap: [AppComponent]

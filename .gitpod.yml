@@ -4,5 +4,5 @@ ports:
   onOpen: open-browser
 tasks:
 - command: npm i
-- command: npm run start
+
 

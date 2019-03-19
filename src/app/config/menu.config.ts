@@ -6,8 +6,16 @@ export const mainMenu: MenuItem[] = [
       {
         label: 'Крестики-нолики',
         routerLink: 'tick-tack-toe'
+      },
+      {
+        label: 'Однорукий бандит',
+        routerLink: 'bandit'
       }
     ]
+  },
+  {
+    label: 'Examples',
+    routerLink: 'exmpales'
   }
 
 ];
