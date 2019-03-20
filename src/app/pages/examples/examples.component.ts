@@ -7,7 +7,6 @@ export interface IIcon {
   icon: number;
 }
 
-
 @Component({
   selector: 'examples',
   template: `
@@ -19,12 +18,7 @@ export class ExamplesComponent implements OnInit {
   output: any;
   ngOnInit() {
 
- this.log('1');
- this.log('2');
- this.log('3');
- this.log('4');
- this.log([5,6,7]);
- this.log({ddd:{ffggg:{}}});
+
   }
 
   log(value: any) {
@@ -32,7 +26,6 @@ export class ExamplesComponent implements OnInit {
     setTimeout(() => this.output = value, 0);
   }
 }
-
 
 @NgModule({
   declarations: [ExamplesComponent],
