@@ -1,9 +1,10 @@
 import { NgModule, Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
+import { ReelModule } from './reel';
 
-export interface IIcon {
-  icon: number;
+export interface ICell {
+  icon: string;
 }
 
 
@@ -11,18 +12,14 @@ export interface IIcon {
   selector: 'bandit',
   template: `
 <h1> Однорукий бандит</h1>
-
+<reel></reel>
   `
 })
 export class BanditComponent implements OnInit {
-  icons: IIcon[] = [
-    { icon: 1 },
-    { icon: 2 },
-    { icon: 3 },
-    { icon: 4 },
-    { icon: 5 },
+  icons: ICell[] = [
+
   ]
-playField:number[][];
+  playField: number[][];
 
   createPlayField() {
     const array: number[][] = [];
@@ -37,8 +34,8 @@ playField:number[][];
   }
 
   ngOnInit() {
-    debugger;
-this.playField=this.createPlayField();
+
+    this.playField = this.createPlayField();
   }
 
 }
@@ -47,7 +44,7 @@ this.playField=this.createPlayField();
 @NgModule({
   declarations: [BanditComponent],
   imports: [
-    CommonModule,
+    CommonModule, ReelModule
   ],
   exports: [BanditComponent]
 })
