@@ -9,6 +9,7 @@ import { MenubarModule } from 'primeng/menubar';
 import { TickTackToeModule } from './pages/tick-tack-toe/tick-tack-toe.component';
 import { BanditModule } from './pages/bandit/bandit.component';
 import { ExamplesModule } from './pages/examples/examples.component';
+import { MainPageModule } from './pages/landing_pages/tm_79270/page.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { ExamplesModule } from './pages/examples/examples.component';
     MenubarModule,
     TickTackToeModule,
     BanditModule,
-    ExamplesModule
+    ExamplesModule,
+    MainPageModule
   ],
   providers: [],
   bootstrap: [AppComponent]

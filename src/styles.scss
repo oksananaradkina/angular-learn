@@ -5,6 +5,21 @@ $color-gray-dark:#777;
 $padding: 1em;
 $border:  1px solid $color-gray;
 
+.page{
+  display:block;
+  height: 95vh;
+}
+
+
+.page-odd{
+  background-color: #ddf
+}
+
+
+.page-even{
+  background-color: #dfd
+}
+
 .game-area{
   display:flex;
 
